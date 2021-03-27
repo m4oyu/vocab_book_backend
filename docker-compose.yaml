@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  backend:
+    build: backend
+    secrets:
+      - db-password
+      - gcp-account
+    depends_on:
+      - db
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp-account
+  db:
+    image: mysql:8.0.19
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=my_vocabulary_book_api
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+  proxy:
+    build: proxy
+    ports:
+      - 80:80
+    depends_on:
+      - backend
+volumes:
+  db-data:
+secrets:
+  db-password:
+    file: db/password.txt
+  gcp-account:
+    file: backend/Translate-test-76e7e5fb8df9.json
