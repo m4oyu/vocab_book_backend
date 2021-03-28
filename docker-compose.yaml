@@ -7,6 +7,8 @@ services:
       - gcp-account
     depends_on:
       - db
+    env_file:
+      - ./backend/backend.env
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp-account
   db:
@@ -16,9 +18,12 @@ services:
     secrets:
       - db-password
     volumes:
+      - ./db/init:/docker-entrypoint-initdb.d
       - db-data:/var/lib/mysql
     environment:
-      - MYSQL_DATABASE=my_vocabulary_book_api
+      - MYSQL_DATABASE=vocabulary_book_api
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=mysql-yuki9015
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
   proxy:
     build: proxy

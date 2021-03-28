@@ -11,15 +11,15 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema my_vocabulary_book_api
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `my_vocabulary_book_api` DEFAULT CHARACTER SET utf8mb4 ;
-USE `my_vocabulary_book_api` ;
+CREATE SCHEMA IF NOT EXISTS `vocabulary_book_api` DEFAULT CHARACTER SET utf8mb4 ;
+USE `vocabulary_book_api` ;
 
 SET CHARSET utf8mb4;
 
 -- -----------------------------------------------------
--- Table `my_vocabulary_book_api`.`user`
+-- Table `vocabulary_book_api`.`user`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `my_vocabulary_book_api`.`user` (
+CREATE TABLE IF NOT EXISTS `vocabulary_book_api`.`user` (
     `id` VARCHAR(128) NOT NULL COMMENT 'id',
     `mail` VARCHAR(128) NOT NULL COMMENT 'mail',
     `password` VARCHAR(64) NOT NULL COMMENT 'password',
@@ -28,9 +28,9 @@ ENGINE = InnoDB
 COMMENT = 'ユーザ';
 
 -- -----------------------------------------------------
--- Table `my_vocabulary_book_api`.`user_vocabulary`
+-- Table `vocabulary_book_api`.`user_vocabulary`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `my_vocabulary_book_api`.`user_book` (
+CREATE TABLE IF NOT EXISTS `vocabulary_book_api`.`user_book` (
     `id` VARCHAR(128) NOT NULL COMMENT 'id',
     `user_id` VARCHAR(64) NOT NULL COMMENT 'user_id',
     `eng` VARCHAR(64) NOT NULL COMMENT 'eng',
