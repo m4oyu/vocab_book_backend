@@ -13,15 +13,12 @@ import (
 	"time"
 )
 
-
-
 type login struct {
-	Mail string `form:"mail" json:"mail" binding:"required"`
+	Mail     string `form:"mail" json:"mail" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
 var identityKey = "id"
-
 
 func main() {
 	port := os.Getenv("PORT")
@@ -81,8 +78,8 @@ func main() {
 
 			if password == user.Password {
 				return &model.User{
-					UserID:  user.UserID,
-					Mail:  user.Mail,
+					UserID:   user.UserID,
+					Mail:     user.Mail,
 					Password: user.Password,
 				}, nil
 			}
@@ -137,11 +134,5 @@ func main() {
 	r.POST("/signup", userHandle.SignUp())
 	r.POST("/login", authMiddleware.LoginHandler)
 
-
-	// 翻訳, 単語帳取得
-	//r.GET("/translate", func(c *gin.Context) {
-	//	res, err := translateText("ja", "The Go Gopher is cute")
-	//	c.String(http.StatusOK, "translated: %s, err: %s", res, err)
-	//})
 	r.Run(":8000")
 }
