@@ -37,6 +37,7 @@ func (h *userHandler) SignUp() gin.HandlerFunc{
 		uuid, err := h.UUID.GenNewRandom()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
 		}
 
 		// insert user into db
@@ -45,9 +46,14 @@ func (h *userHandler) SignUp() gin.HandlerFunc{
 			Mail: req.Mail,
 			Password: req.Password,
 		})
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
 		// return response
 		c.JSON(http.StatusOK, gin.H{"status": "Successful sign-up"})
+		return
 	}
 }
 
