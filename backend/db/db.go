@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	// "os"
 
@@ -20,20 +21,19 @@ var DB *sql.DB
 func init() {
 	/* ===== データベースへ接続する. ===== */
 	// ユーザ
-	user := "user"
+	user := os.Getenv("MYSQL_USER")
 	// パスワード
-	password := "mysql-yuki9015"
-	//// 接続先ホスト
-	//host := "localhost"
-	//host := "vocabulary-book_mysql"
-	//// 接続先ポート
-	//port := "3306"
+	password := os.Getenv("MYSQL_PASSWORD")
+	// 接続先ホスト
+	host := os.Getenv("MYSQL_HOST")
+	// 接続先ポート
+	port := os.Getenv("MYSQL_PORT")
 	// 接続先データベース
-	database := "vocabulary_book_api"
+	database := os.Getenv("MYSQL_DATABASE")
 	// user:password@tcp(host:port)/database
 	var err error
 	DB, err = sql.Open(driverName,
-		fmt.Sprintf("%s:%s@tcp(db:3306)/%s", user, password, database))
+		fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database))
 	if err != nil {
 		log.Fatal(err)
 	}

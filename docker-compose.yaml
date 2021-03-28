@@ -22,8 +22,6 @@ services:
       - db-data:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=vocabulary_book_api
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=mysql-yuki9015
       - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
   proxy:
     build: proxy
