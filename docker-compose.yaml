@@ -3,12 +3,12 @@ services:
   backend:
     build: backend
     secrets:
-      - db-password
       - gcp-account
     depends_on:
       - db
     env_file:
-      - ./backend/backend.env
+      - backend/backend.env
+      - backend/password.env
     environment:
       - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/gcp-account
   db:
