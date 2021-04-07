@@ -1,9 +1,9 @@
 # vocabulary_book 
 
-##linux
+##linux/ubuntu
 Docker daemonの起動
 ```bash
- sudo docker service start
+ sudo service docker start
 ```
 プロジェクトファイルの変更
 ```bash
