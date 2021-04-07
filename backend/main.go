@@ -5,6 +5,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"log"
+	"my-vocabulary-book/constant"
 	"my-vocabulary-book/controller"
 	"my-vocabulary-book/controller/uuidgen"
 	"my-vocabulary-book/db"
@@ -18,8 +19,6 @@ type login struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
-var identityKey = "id"
-
 func main() {
 	port := os.Getenv("PORT")
 	r := gin.New()
@@ -31,11 +30,14 @@ func main() {
 	}
 
 	userModel := model.NewUserModel(db.DB)
-	//userBookModel := model.new
+	userBookModel := model.NewUserBookModel(db.DB)
+	translateModel := model.NewTranslateModel()
 
 	uuid := uuidgen.NewUUIDGenerator()
 
 	userHandle := controller.NewUserHandler(userModel, uuid)
+	userBookHandler := controller.NewUserBookHandler()
+	translateHandler := controller.NewTranslateHandler(userBookModel, translateModel, uuid)
 
 	// the jwt middleware
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
@@ -43,12 +45,14 @@ func main() {
 		Key:         []byte("secret key"),
 		Timeout:     time.Hour,
 		MaxRefresh:  time.Hour,
-		IdentityKey: identityKey,
-		// Authenticatorによる認証後、Authenticatorの返り値を引数にとりtoken.Claimに組み込む
+		IdentityKey: constant.IdentityKey,
+		// Authenticatorによる認証後、呼び出し
+		// Authenticatorの返り値を引数にとりtoken.Claimに組み込む
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*model.User); ok {
+				fmt.Println(v.Mail)
 				return jwt.MapClaims{
-					identityKey: v.UserID,
+					constant.IdentityKey: v.UserID,
 				}
 			}
 			return jwt.MapClaims{}
@@ -57,7 +61,7 @@ func main() {
 		IdentityHandler: func(c *gin.Context) interface{} {
 			claims := jwt.ExtractClaims(c)
 			return &model.User{
-				UserID: claims[identityKey].(string),
+				UserID: claims[constant.IdentityKey].(string),
 			}
 		},
 		// 認証処理、返り値はPayloadFuncにてtoken.Claimへ組み込み
@@ -70,13 +74,15 @@ func main() {
 			mail := loginValues.Mail
 			password := loginValues.Password
 
-			//TODO get user
+			// user情報取得
 			user, err := userModel.SelectUserByMail(mail)
 			if err != nil {
 				log.Println(fmt.Errorf("middleware.Authenticator: %w", err))
 			}
 
+			// 承認
 			if password == user.Password {
+				fmt.Print(user)
 				return &model.User{
 					UserID:   user.UserID,
 					Mail:     user.Mail,
@@ -133,6 +139,13 @@ func main() {
 	// 登録, 認証
 	r.POST("/signup", userHandle.SignUp())
 	r.POST("/login", authMiddleware.LoginHandler)
+
+	auth := r.Group("/auth")
+	auth.Use(authMiddleware.MiddlewareFunc())
+	{
+		auth.POST("/user", userBookHandler.FetchUserBook())
+		auth.POST("/translate", translateHandler.TranslateText())
+	}
 
 	r.Run(":8000")
 }
