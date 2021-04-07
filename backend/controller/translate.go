@@ -1,55 +1,90 @@
 package controller
 
 import (
-	"cloud.google.com/go/translate"
-	"context"
 	"fmt"
-	"golang.org/x/text/language"
+	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-gonic/gin"
+	"my-vocabulary-book/constant"
+	"my-vocabulary-book/controller/uuidgen"
+	"my-vocabulary-book/model"
+	"net/http"
 )
 
 type TranslateHandler interface {
-	TranslateText(targetLanguage, text string) (string, error)
+	TranslateText() gin.HandlerFunc
 }
 
 type translateHandler struct {
-
+	UserBookModel  model.UserBookModel
+	TranslateModel model.TranslateModel
+	UUID           uuidgen.UUIDGenerator
 }
 
-func NewTranslateHandler() TranslateHandler {
-	return &translateHandler{}
+func NewTranslateHandler(ubm model.UserBookModel, tm model.TranslateModel, uuid uuidgen.UUIDGenerator) TranslateHandler {
+	return &translateHandler{
+		UserBookModel:  ubm,
+		TranslateModel: tm,
+		UUID:           uuid,
+	}
 }
 
-func (t *translateHandler)TranslateText(targetLanguage, text string) (string, error) {
-	// user get
-	// request receive
-	// throw translate request to gcp api
-	// insert into db
-	// return response
+func (h *translateHandler) TranslateText() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// user get
+		userID := jwt.ExtractClaims(c)[constant.IdentityKey].(string)
+		fmt.Print(userID)
+		//user, ok := c.Get(constant.IdentityKey)
+		//if ok != false {
+		//	c.JSON(http.StatusBadRequest, gin.H{"error": "user does not exist"})
+		//	return
+		//}
 
+		// request receive
+		var req TranslateRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+		fmt.Print(req)
 
-	// text := "The Go Gopher is cute"
-	ctx := context.Background()
+		// throw translate request to gcp api
+		response, err := h.TranslateModel.TranslateAPI("ja", req.Text)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+		fmt.Print(response)
 
-	lang, err := language.Parse(targetLanguage)
-	if err != nil {
-		return "", fmt.Errorf("language.Parse: %v", err)
+		// generate uuid
+		uuid, err := h.UUID.GenNewRandom()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// create new data
+		userBook := model.UserBook{
+			ID:       uuid,
+			UserID:   userID,
+			English:  req.Text,
+			Japanese: response,
+		}
+
+		// insert into db
+		err = h.UserBookModel.InsertUserBook(&userBook)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			return
+		}
+
+		// return response
+		c.JSON(http.StatusOK, gin.H{
+			"text": response,
+		})
+		return
 	}
+}
 
-	client, err := translate.NewClient(ctx)
-	if err != nil {
-		return "", err
-	}
-	defer client.Close()
-
-	resp, err := client.Translate(ctx, []string{text}, lang, nil)
-	if err != nil {
-		return "", fmt.Errorf("Translate: %v", err)
-	}
-	if len(resp) == 0 {
-		return "", fmt.Errorf("Translate returned empty response to text: %s", text)
-	}
-
-	// 翻訳情報をDBに格納
-
-	return resp[0].Text, nil
+type TranslateRequest struct {
+	Text string `json:"text" binding:"required"`
 }
