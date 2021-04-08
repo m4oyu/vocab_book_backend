@@ -3,7 +3,6 @@ package model
 import (
 	"database/sql"
 	"fmt"
-	"my-vocabulary-book/db"
 )
 
 type UserModel interface {
@@ -32,7 +31,7 @@ type User struct {
 
 // InsertUser insert user
 func (m *userModel) InsertUser(record *User) error {
-	stmt, err := db.DB.Prepare("INSERT INTO user(id, mail, password) VALUES(?, ?, ?)")
+	stmt, err := m.DB.Prepare("INSERT INTO user(id, mail, password) VALUES(?, ?, ?)")
 	if err != nil {
 		return fmt.Errorf("model.InsertUser: %w", err)
 	}
@@ -45,19 +44,19 @@ func (m *userModel) InsertUser(record *User) error {
 
 // SelectUserByPrimaryKey get user
 func (m *userModel) SelectUserByPrimaryKey(userID string) (*User, error) {
-	row := db.DB.QueryRow("SELECT * FROM user WHERE id=?", userID)
+	row := m.DB.QueryRow("SELECT * FROM user WHERE id=?", userID)
 	return convertToUser(row)
 }
 
 // SelectUserByMail get user
 func (m *userModel) SelectUserByMail(mail string) (*User, error) {
-	row := db.DB.QueryRow("SELECT * FROM user WHERE mail=?", mail)
+	row := m.DB.QueryRow("SELECT * FROM user WHERE mail=?", mail)
 	return convertToUser(row)
 }
 
 // UpdateUserByPrimaryKey update user
 func (m *userModel) UpdateUserByPrimaryKey(record *User) error {
-	stmt, err := db.DB.Prepare("UPDATE user SET mail = ?, password = ? WHERE id = ? ")
+	stmt, err := m.DB.Prepare("UPDATE user SET mail = ?, password = ? WHERE id = ? ")
 	if err != nil {
 		return fmt.Errorf("model.UpdateUserByPrimaryKey: %w", err)
 	}
