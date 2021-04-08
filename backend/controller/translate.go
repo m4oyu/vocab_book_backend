@@ -32,7 +32,6 @@ func (h *translateHandler) TranslateText() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// user get
 		userID := jwt.ExtractClaims(c)[constant.IdentityKey].(string)
-		fmt.Print(userID)
 		//user, ok := c.Get(constant.IdentityKey)
 		//if ok != false {
 		//	c.JSON(http.StatusBadRequest, gin.H{"error": "user does not exist"})

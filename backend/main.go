@@ -36,7 +36,7 @@ func main() {
 	uuid := uuidgen.NewUUIDGenerator()
 
 	userHandle := controller.NewUserHandler(userModel, uuid)
-	userBookHandler := controller.NewUserBookHandler()
+	userBookHandler := controller.NewUserBookHandler(userBookModel)
 	translateHandler := controller.NewTranslateHandler(userBookModel, translateModel, uuid)
 
 	// the jwt middleware
@@ -143,7 +143,7 @@ func main() {
 	auth := r.Group("/auth")
 	auth.Use(authMiddleware.MiddlewareFunc())
 	{
-		auth.POST("/user", userBookHandler.FetchUserBook())
+		auth.GET("/userBook", userBookHandler.FetchUserBooks())
 		auth.POST("/translate", translateHandler.TranslateText())
 	}
 
