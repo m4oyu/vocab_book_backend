@@ -4,6 +4,7 @@ import (
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
+	"log"
 	"my-vocabulary-book/constant"
 	"my-vocabulary-book/controller/uuidgen"
 	"my-vocabulary-book/model"
@@ -41,15 +42,16 @@ func (h *translateHandler) TranslateText() gin.HandlerFunc {
 		// request receive
 		var req TranslateRequest
 		if err := c.ShouldBindJSON(&req); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			log.Printf("translateHandler.TranslateText: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad Request"})
 			return
 		}
-		fmt.Print(req)
 
 		// throw translate request to gcp api
 		response, err := h.TranslateModel.TranslateAPI("ja", req.Text)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			log.Printf("translateHandler.TranslateText: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 			return
 		}
 		fmt.Print(response)
@@ -57,7 +59,8 @@ func (h *translateHandler) TranslateText() gin.HandlerFunc {
 		// generate uuid
 		uuid, err := h.UUID.GenNewRandom()
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			log.Printf("translateHandler.TranslateText: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 			return
 		}
 
@@ -72,7 +75,8 @@ func (h *translateHandler) TranslateText() gin.HandlerFunc {
 		// insert into db
 		err = h.UserBookModel.InsertUserBook(&userBook)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err})
+			log.Printf("translateHandler.TranslateText: %v\n", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal Server Error"})
 			return
 		}
 

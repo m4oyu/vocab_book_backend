@@ -29,11 +29,11 @@ type UserBook struct {
 func (m *userBookModel) InsertUserBook(record *UserBook) error {
 	stmt, err := m.DB.Prepare("INSERT INTO user_book(id, user_id, eng, ja) VALUES(?, ?, ?, ?)")
 	if err != nil {
-		return fmt.Errorf("model.InsertUserBook: %w", err)
+		return fmt.Errorf("userBookModel.InsertUserBook: %w", err)
 	}
 	_, err = stmt.Exec(record.ID, record.UserID, record.English, record.Japanese)
 	if err != nil {
-		return fmt.Errorf("model.InsertUserBook: %w", err)
+		return fmt.Errorf("userBookModel.InsertUserBook: %w", err)
 	}
 	return nil
 }
@@ -41,7 +41,7 @@ func (m *userBookModel) InsertUserBook(record *UserBook) error {
 func (m *userBookModel) SelectUserBooksByUserID(userID string) ([]*UserBook, error) {
 	rows, err := m.DB.Query("SELECT * FROM user_book WHERE user_id=?", userID)
 	if err != nil {
-		return nil, fmt.Errorf("model.SelectUserBooks: %w", err)
+		return nil, fmt.Errorf("userBookModel.SelectUserBooks: %w", err)
 	}
 	return convertToUserBooks(rows)
 }

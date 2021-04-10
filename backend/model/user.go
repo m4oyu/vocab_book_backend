@@ -58,11 +58,11 @@ func (m *userModel) SelectUserByMail(mail string) (*User, error) {
 func (m *userModel) UpdateUserByPrimaryKey(record *User) error {
 	stmt, err := m.DB.Prepare("UPDATE user SET mail = ?, password = ? WHERE id = ? ")
 	if err != nil {
-		return fmt.Errorf("model.UpdateUserByPrimaryKey: %w", err)
+		return fmt.Errorf("userModel.UpdateUserByPrimaryKey: %w", err)
 	}
 	_, err = stmt.Exec(record.Mail, record.Password, record.UserID)
 	if err != nil {
-		return fmt.Errorf("model.UpdateUserByPrimaryKey: %w", err)
+		return fmt.Errorf("userModel.UpdateUserByPrimaryKey: %w", err)
 	}
 	return nil
 }
