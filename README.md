@@ -1,4 +1,8 @@
 # vocabulary_book 
+翻訳した単語をDBで保存し、あとで単語帳のように見返せるWEBアプリケーション
+
+翻訳機能はGCPのTranslationAPIを使用しています
+
 
 ##linux/ubuntu
 Docker daemonの起動
