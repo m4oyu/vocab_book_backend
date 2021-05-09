@@ -5,6 +5,7 @@ go 1.16
 require (
 	cloud.google.com/go v0.79.0
 	github.com/appleboy/gin-jwt/v2 v2.6.4
+	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1 // indirect
 	github.com/go-sql-driver/mysql v1.5.0

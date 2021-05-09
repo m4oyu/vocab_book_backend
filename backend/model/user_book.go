@@ -47,7 +47,7 @@ func (m *userBookModel) SelectUserBooksByUserID(userID string) ([]*UserBook, err
 }
 
 func (m *userBookModel) DeleteUserBook() {
-
+	return
 }
 
 func convertToUserBooks(rows *sql.Rows) ([]*UserBook, error) {

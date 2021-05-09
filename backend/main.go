@@ -3,7 +3,9 @@ package main
 import (
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	"log"
 	"my-vocabulary-book/constant"
 	"my-vocabulary-book/controller"
@@ -135,6 +137,30 @@ func main() {
 	if errInit != nil {
 		log.Fatal("authMiddleware.MiddlewareInit() Error:" + errInit.Error())
 	}
+
+	r.Use(cors.New(cors.Config{
+		AllowMethods: []string{
+			"POST",
+			"GET",
+			"PUT",
+			"DELETE",
+		},
+		AllowHeaders: []string{
+			"Access-Control-Allow-Headers",
+			"Content-Type",
+			"Content-Length",
+			"Accept-Encoding",
+			"X-CSRF-Token",
+			"Authorization",
+		},
+		// 許可したいアクセス元の一覧
+		AllowOrigins: []string{
+			"http://localhost:8080",
+		},
+		// preflight requestで許可した後の接続可能時間
+		// https://godoc.org/github.com/gin-contrib/cors#Config の中のコメントに詳細あり
+		MaxAge: 24 * time.Hour,
+	}))
 
 	// 登録, 認証
 	r.POST("/signup", userHandle.SignUp())
