@@ -35,4 +35,4 @@ secrets:
   db-password:
     file: db/password.txt
   gcp-account:
-    file: backend/Translate-test-76e7e5fb8df9.json
+    file: backend/translate-test-1616051880933-bc3118d196b1.json
