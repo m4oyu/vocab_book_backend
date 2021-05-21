@@ -8,7 +8,7 @@ import (
 type UserBookModel interface {
 	InsertUserBook(record *UserBook) error
 	SelectUserBooksByUserID(userID string) ([]*UserBook, error)
-	DeleteUserBook()
+	DeleteUserBook(id string) error
 }
 
 type userBookModel struct {
@@ -46,8 +46,16 @@ func (m *userBookModel) SelectUserBooksByUserID(userID string) ([]*UserBook, err
 	return convertToUserBooks(rows)
 }
 
-func (m *userBookModel) DeleteUserBook() {
-	return
+func (m *userBookModel) DeleteUserBook(id string) error {
+	stmt, err := m.DB.Prepare("DELETE FROM user_book WHERE id=?")
+	if err != nil {
+		return fmt.Errorf("userBookModel.DeleteUserBook: %w", err)
+	}
+	_, err = stmt.Exec(id)
+	if err != nil {
+		return fmt.Errorf("userBookModel.DeleteUserBook: %w", err)
+	}
+	return nil
 }
 
 func convertToUserBooks(rows *sql.Rows) ([]*UserBook, error) {

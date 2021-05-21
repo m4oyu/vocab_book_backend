@@ -171,6 +171,7 @@ func main() {
 	{
 		auth.GET("/userBook", userBookHandler.FetchUserBooks())
 		auth.POST("/translate", translateHandler.TranslateText())
+		auth.DELETE("/userBook", userBookHandler.DeleteUserBook())
 	}
 
 	r.Run(":8000")

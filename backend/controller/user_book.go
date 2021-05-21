@@ -11,6 +11,7 @@ import (
 
 type UserBookHandler interface {
 	FetchUserBooks() gin.HandlerFunc
+	DeleteUserBook() gin.HandlerFunc
 }
 
 type userBookHandler struct {
@@ -66,4 +67,29 @@ type UserBook struct {
 	UserID   string `json:"user_id" binding:"required"`
 	English  string `json:"english" binding:"required"`
 	Japanese string `json:"japanese" binding:"required"`
+}
+
+func (h *userBookHandler) DeleteUserBook() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var req DeleteRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			log.Printf("userHandler.SignUp: %v\n", err)
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Bad Request"})
+			return
+		}
+		for _, value := range req.IDList {
+			err := h.UserBookModel.DeleteUserBook(value)
+			if err != nil {
+				log.Printf("userBookHandler.DeleteUserBook: %v\n", err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "Internal server error"})
+				return
+			}
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "completely deleted"})
+		return
+	}
+}
+
+type DeleteRequest struct {
+	IDList []string `json:"idList" binding:"required"`
 }
