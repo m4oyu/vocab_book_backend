@@ -156,6 +156,8 @@ func main() {
 		// 許可したいアクセス元の一覧
 		AllowOrigins: []string{
 			"http://localhost:8080",
+			"10.128.0.3:80",
+			"35.239.221.204:80",
 		},
 		// preflight requestで許可した後の接続可能時間
 		// https://godoc.org/github.com/gin-contrib/cors#Config の中のコメントに詳細あり
