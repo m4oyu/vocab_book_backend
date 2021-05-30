@@ -159,6 +159,7 @@ func main() {
 			"http://35.239.221.204:80",
 			"http://35.239.221.204:8080",
 			"http://35.239.221.204",
+			"http://www.vocabulary-book.com",
 		},
 		// preflight requestで許可した後の接続可能時間
 		// https://godoc.org/github.com/gin-contrib/cors#Config の中のコメントに詳細あり
