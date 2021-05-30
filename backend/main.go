@@ -156,9 +156,9 @@ func main() {
 		// 許可したいアクセス元の一覧
 		AllowOrigins: []string{
 			"http://localhost:8080",
-			"http://35.239.221.204:80",
-			"http://35.239.221.204:8080",
-			"http://35.239.221.204",
+			//"http://35.239.221.204:80",
+			//"http://35.239.221.204:8080",
+			//"http://35.239.221.204",
 			"http://www.vocabulary-book.com",
 		},
 		// preflight requestで許可した後の接続可能時間
